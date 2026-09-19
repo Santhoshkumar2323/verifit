@@ -21,6 +21,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://verifit.onrender.com",
+        "https://verifit-ivory.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
