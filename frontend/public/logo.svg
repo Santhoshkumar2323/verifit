@@ -1,0 +1,43 @@
+<svg
+  width="180"
+  height="48"
+  viewBox="0 0 180 48"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <rect
+    x="2"
+    y="6"
+    width="36"
+    height="36"
+    rx="11"
+    fill="#227A50"
+  />
+
+  <path
+    d="M12 24.5L18.5 31L29 17"
+    stroke="#FFFFFF"
+    stroke-width="3.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <circle
+    cx="31"
+    cy="14"
+    r="4"
+    fill="#D9AD3F"
+  />
+
+  <text
+    x="50"
+    y="32"
+    fill="#101716"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="24"
+    font-weight="700"
+    letter-spacing="-0.5"
+  >
+    VeriFit
+  </text>
+</svg>
