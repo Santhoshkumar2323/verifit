@@ -6,6 +6,8 @@ import {
   useState,
 } from "react";
 
+import { supabase } from "@/lib/supabase";
+
 import {
   createComment,
   deleteComment,
@@ -32,6 +34,9 @@ export default function Comments({
 
   const [error, setError] = useState("");
   const [submitError, setSubmitError] = useState("");
+  const [currentUserId, setCurrentUserId] = useState<
+    string | null
+  >(null);
 
   async function loadComments() {
     setError("");
@@ -45,6 +50,26 @@ export default function Comments({
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadCurrentUser() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!cancelled) {
+        setCurrentUserId(user?.id ?? null);
+      }
+    }
+
+    void loadCurrentUser();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     setLoading(true);
@@ -301,26 +326,23 @@ export default function Comments({
                     </div>
                   </div>
 
-                  {/* 
-                   * The current ApiComment contract does not expose
-                   * can_delete. For now, deletion is available through
-                   * the UI only when the comment belongs to the current
-                   * user after we add ownership information to the API.
-                   */}
-                  <button
-                    type="button"
-                    onClick={() =>
-                      void handleDelete(comment.id)
-                    }
-                    disabled={
-                      deletingId === comment.id
-                    }
-                    className="shrink-0 text-xs font-semibold text-[var(--danger)] transition hover:underline disabled:opacity-50"
-                  >
-                    {deletingId === comment.id
-                      ? "Deleting..."
-                      : "Delete"}
-                  </button>
+                  {currentUserId ===
+                    comment.author.id && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        void handleDelete(comment.id)
+                      }
+                      disabled={
+                        deletingId === comment.id
+                      }
+                      className="shrink-0 text-xs font-semibold text-[var(--danger)] transition hover:underline disabled:opacity-50"
+                    >
+                      {deletingId === comment.id
+                        ? "Deleting..."
+                        : "Delete"}
+                    </button>
+                  )}
                 </div>
 
                 <p className="mt-4 whitespace-pre-wrap text-sm leading-6 text-[var(--text)]">

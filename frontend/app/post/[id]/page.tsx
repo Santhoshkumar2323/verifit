@@ -3,12 +3,14 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 import Comments from "@/components/Comments";
 import Navbar from "@/components/Navbar";
 import Verification from "@/components/Verification";
 
 import {
+  deletePost,
   getApiErrorMessage,
   getPost,
   upvotePost,
@@ -28,6 +30,29 @@ export default function PostDetailPage() {
   const [voting, setVoting] = useState(false);
   const [voteError, setVoteError] = useState("");
   const [shareMessage, setShareMessage] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadCurrentUser() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!cancelled) {
+        setCurrentUserId(user?.id ?? null);
+      }
+    }
+
+    void loadCurrentUser();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (!postId) {
@@ -78,15 +103,42 @@ export default function PostDetailPage() {
       setPost((current) =>
         current
           ? {
-              ...current,
-              votes: result.votes,
-            }
+            ...current,
+            votes: result.votes,
+          }
           : current,
       );
     } catch (err) {
       setVoteError(getApiErrorMessage(err));
     } finally {
       setVoting(false);
+    }
+  }
+
+  async function handleDelete() {
+    if (!post || deleting) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this post?",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setDeleting(true);
+    setDeleteError("");
+
+    try {
+      await deletePost(post.id);
+      router.push("/");
+      router.refresh();
+    } catch (err) {
+      setDeleteError(getApiErrorMessage(err));
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -218,13 +270,6 @@ export default function PostDetailPage() {
               ← Back to feed
             </Link>
 
-            <button
-              type="button"
-              onClick={() => void handleShare()}
-              className="rounded-xl border border-[var(--border)] bg-white px-4 py-2 text-sm font-semibold text-[var(--text)] transition hover:border-[var(--primary)] hover:text-[var(--primary)]"
-            >
-              Share
-            </button>
           </div>
 
           <article className="overflow-hidden rounded-3xl border border-[var(--border)] bg-white shadow-sm">
@@ -326,7 +371,7 @@ export default function PostDetailPage() {
 
                   {post.fact_check.confidence !== null &&
                     post.fact_check.confidence !==
-                      undefined && (
+                    undefined && (
                       <p className="mt-4 text-sm text-[var(--text-muted)]">
                         Model confidence:{" "}
                         <span className="font-semibold text-[var(--text)]">
@@ -370,6 +415,16 @@ export default function PostDetailPage() {
                     ? "comment"
                     : "comments"}
                 </a>
+                {currentUserId === post.author.id && (
+                  <button
+                    type="button"
+                    onClick={() => void handleDelete()}
+                    disabled={deleting}
+                    className="rounded-xl border border-[var(--danger)]/40 bg-white px-5 py-3 text-sm font-bold text-[var(--danger)] transition hover:border-[var(--danger)] hover:bg-[var(--danger)]/5 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {deleting ? "Deleting..." : "Delete post"}
+                  </button>
+                )}
 
                 <button
                   type="button"
@@ -383,6 +438,12 @@ export default function PostDetailPage() {
               {voteError && (
                 <div className="mt-4 rounded-xl border border-[var(--danger)]/30 bg-[var(--danger)]/10 px-4 py-3 text-sm text-[var(--danger)]">
                   {voteError}
+                </div>
+              )}
+
+              {deleteError && (
+                <div className="mt-4 rounded-xl border border-[var(--danger)]/30 bg-[var(--danger)]/10 px-4 py-3 text-sm text-[var(--danger)]">
+                  {deleteError}
                 </div>
               )}
 

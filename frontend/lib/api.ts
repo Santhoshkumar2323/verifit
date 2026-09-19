@@ -370,6 +370,23 @@ export async function upvotePost(
   );
 }
 
+export async function deletePost(
+  postId: string,
+): Promise<{
+  message: string;
+  post_id: string;
+}> {
+  return request<{
+    message: string;
+    post_id: string;
+  }>(
+    `/posts/${encodeURIComponent(postId)}`,
+    {
+      method: "DELETE",
+    },
+  );
+}
+
 
 /* -------------------------------------------------------------------------- */
 /* Comments                                                                   */

@@ -18,6 +18,7 @@ from schemas import (
 )
 from services import (
     create_post,
+    delete_post,
     get_post_by_id,
     get_posts,
     upvote_post,
@@ -246,4 +247,45 @@ async def vote_for_post(
     return {
         "post_id": result["post_id"],
         "votes": result["votes"],
+    }
+
+# ---------------------------------------------------------------------------
+# Delete post
+# ---------------------------------------------------------------------------
+
+@router.delete(
+    "/{post_id}",
+)
+async def delete_existing_post(
+    post_id: str,
+    user_id: str = Depends(get_current_user),
+):
+    """
+    Delete a post owned by the authenticated user.
+
+    The service layer explicitly checks author_id because the backend
+    uses the Supabase service-role client.
+    """
+
+    try:
+        deleted = delete_post(
+            supabase=supabase,
+            user_id=user_id,
+            post_id=post_id,
+        )
+    except Exception as exc:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Could not delete post: {str(exc)}",
+        )
+
+    if not deleted:
+        raise HTTPException(
+            status_code=404,
+            detail="Post not found or you are not allowed to delete it.",
+        )
+
+    return {
+        "message": "Post deleted successfully.",
+        "post_id": post_id,
     }

@@ -459,10 +459,15 @@ def upvote_post(
     post_id: str,
 ):
     """
-    Add one upvote for a user/post pair.
+    Toggle an upvote for a user/post pair.
 
-    The database has a unique(user_id, post_id) constraint,
-    so the same user cannot create multiple votes.
+    If the user has not voted:
+        create an upvote.
+
+    If the user has already voted:
+        remove that upvote.
+
+    Returns the current total number of upvotes.
     """
 
     existing_vote = (
@@ -476,35 +481,30 @@ def upvote_post(
     )
 
     if existing_vote.data:
-        votes_result = (
+        vote_id = existing_vote.data[0]["id"]
+
+        (
             supabase
             .table("votes")
-            .select(
-                "id",
-                count="exact",
-            )
-            .eq("post_id", post_id)
-            .eq("vote_type", 1)
+            .delete()
+            .eq("id", vote_id)
+            .eq("user_id", user_id)
             .execute()
         )
 
-        return {
-            "post_id": post_id,
-            "votes": votes_result.count or 0,
-        }
-
-    (
-        supabase
-        .table("votes")
-        .insert(
-            {
-                "user_id": user_id,
-                "post_id": post_id,
-                "vote_type": 1,
-            }
+    else:
+        (
+            supabase
+            .table("votes")
+            .insert(
+                {
+                    "user_id": user_id,
+                    "post_id": post_id,
+                    "vote_type": 1,
+                }
+            )
+            .execute()
         )
-        .execute()
-    )
 
     votes_result = (
         supabase
@@ -522,6 +522,32 @@ def upvote_post(
         "post_id": post_id,
         "votes": votes_result.count or 0,
     }
+
+def delete_post(
+    supabase,
+    user_id: str,
+    post_id: str,
+):
+    """
+    Delete a post only when it belongs to the authenticated user.
+
+    The backend uses the Supabase service-role client, so ownership
+    must be explicitly enforced here rather than relying on RLS.
+    """
+
+    result = (
+        supabase
+        .table("posts")
+        .delete()
+        .eq("id", post_id)
+        .eq("author_id", user_id)
+        .execute()
+    )
+
+    if not result.data:
+        return False
+
+    return True
 
 
 # ---------------------------------------------------------------------------
