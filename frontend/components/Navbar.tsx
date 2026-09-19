@@ -149,27 +149,27 @@ export default function Navbar() {
     },
     ...(user
       ? [
-          {
-            label: "My Bookings",
-            href: "/bookings",
-          },
-        ]
+        {
+          label: "My Bookings",
+          href: "/bookings",
+        },
+      ]
       : []),
     ...(role === "PROFESSIONAL"
       ? [
-          {
-            label: "Studio",
-            href: "/studio",
-          },
-        ]
+        {
+          label: "Studio",
+          href: "/studio",
+        },
+      ]
       : []),
     ...(role === "ADMIN"
       ? [
-          {
-            label: "Admin",
-            href: "/admin/professionals",
-          },
-        ]
+        {
+          label: "Admin",
+          href: "/admin/professionals",
+        },
+      ]
       : []),
   ];
 
@@ -192,17 +192,14 @@ export default function Navbar() {
         <Link
           href="/"
           onClick={() => setMobileOpen(false)}
-          className="flex items-center gap-2"
+          className="flex items-center"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#227A50] text-sm font-bold text-white">
-            V
-          </div>
-
-          <span className="text-lg font-bold tracking-tight text-[#182321]">
-            VeriFit
-          </span>
+          <img
+            src="/logo.svg"
+            alt="VeriFit"
+            className="h-10 w-auto"
+          />
         </Link>
-
         <nav className="hidden items-center gap-1 md:flex">
           {navItems.map((item) => {
             const isActive =
@@ -214,11 +211,10 @@ export default function Navbar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`rounded-xl px-4 py-2 text-sm font-medium transition ${
-                  isActive
+                className={`rounded-xl px-4 py-2 text-sm font-medium transition ${isActive
                     ? "bg-[#E7F4ED] text-[#227A50]"
                     : "text-[#66736F] hover:bg-[#F6F8F7] hover:text-[#182321]"
-                }`}
+                  }`}
               >
                 {item.label}
               </Link>
@@ -300,11 +296,10 @@ export default function Navbar() {
                   key={item.href}
                   href={item.href}
                   onClick={() => setMobileOpen(false)}
-                  className={`block rounded-xl px-4 py-3 text-sm font-medium ${
-                    isActive
+                  className={`block rounded-xl px-4 py-3 text-sm font-medium ${isActive
                       ? "bg-[#E7F4ED] text-[#227A50]"
                       : "text-[#66736F] hover:bg-[#F6F8F7]"
-                  }`}
+                    }`}
                 >
                   {item.label}
                 </Link>
