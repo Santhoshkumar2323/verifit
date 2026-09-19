@@ -1,42 +1,52 @@
 <svg
-  width="180"
-  height="48"
-  viewBox="0 0 180 48"
+  width="500"
+  height="160"
+  viewBox="0 0 500 160"
   fill="none"
   xmlns="http://www.w3.org/2000/svg"
 >
+  <!-- Dark logo background -->
   <rect
-    x="2"
-    y="6"
-    width="36"
-    height="36"
-    rx="11"
-    fill="#227A50"
+    x="0"
+    y="0"
+    width="500"
+    height="160"
+    rx="14"
+    fill="#0D1824"
   />
 
+  <!-- Shield -->
   <path
-    d="M12 24.5L18.5 31L29 17"
+    d="M80 29
+       L120 45
+       L120 78
+       C120 105 103 120 80 131
+       C57 120 40 105 40 78
+       L40 45
+       L80 29Z"
+    fill="#0D9488"
+  />
+
+  <!-- Check mark -->
+  <path
+    d="M58 78
+       L73 93
+       L103 59"
     stroke="#FFFFFF"
-    stroke-width="3.5"
+    stroke-width="9"
     stroke-linecap="round"
     stroke-linejoin="round"
   />
 
-  <circle
-    cx="31"
-    cy="14"
-    r="4"
-    fill="#D9AD3F"
-  />
-
+  <!-- VeriFit wordmark -->
   <text
-    x="50"
-    y="32"
-    fill="#101716"
-    font-family="Arial, Helvetica, sans-serif"
-    font-size="24"
+    x="145"
+    y="99"
+    fill="#FFFFFF"
+    font-family="Inter, Arial, Helvetica, sans-serif"
+    font-size="56"
     font-weight="700"
-    letter-spacing="-0.5"
+    letter-spacing="-2.5"
   >
     VeriFit
   </text>
